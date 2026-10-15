@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Supplier{% endblock %}
+
+{% block body %}
+    <h1>Supplier</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ supplier.id }}</td>
+            </tr>
+            <tr>
+                <th>Company_name</th>
+                <td>{{ supplier.companyName }}</td>
+            </tr>
+            <tr>
+                <th>Contact_person</th>
+                <td>{{ supplier.contactPerson }}</td>
+            </tr>
+            <tr>
+                <th>Phone_number</th>
+                <td>{{ supplier.phoneNumber }}</td>
+            </tr>
+            <tr>
+                <th>Email_address</th>
+                <td>{{ supplier.emailAddress }}</td>
+            </tr>
+            <tr>
+                <th>Address</th>
+                <td>{{ supplier.address }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_supplier_index') }}">back to list</a>
+
+    <a href="{{ path('app_supplier_edit', {'id': supplier.id}) }}">edit</a>
+
+    {{ include('supplier/_delete_form.html.twig') }}
+{% endblock %}

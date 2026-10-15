@@ -13,9 +13,11 @@ class ProductType extends AbstractType
     {
         $builder
             ->add('name')
+            ->add('sku')
             ->add('description')
             ->add('price')
-        ;
+            ->add('quantity')
+            ->add('minimumStock');
     }
 
     public function configureOptions(OptionsResolver $resolver): void
