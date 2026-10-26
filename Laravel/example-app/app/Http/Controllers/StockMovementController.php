@@ -9,10 +9,57 @@ use Illuminate\Validation\Rule;
 
 class StockMovementController extends Controller
 {
-    public function index()
-    {
-        return StockMovement::with(['product', 'warehouse', 'supplier'])->get();
+    
+public function index(Request $request)
+{
+    $query = StockMovement::with(['product', 'warehouse', 'supplier']);
+
+    $filters = [
+        'id',
+        'product_id',
+        'warehouse_id',
+        'supplier_id',
+        'type',
+        'quantity',
+        'note',
+        'created_at',
+        'updated_at',
+    ];
+
+    foreach ($filters as $field) {
+        $value = $request->query($field);
+
+        if ($value === null || $value === '') {
+            continue;
+        }
+
+        if (in_array($field, [
+            'id',
+            'product_id',
+            'warehouse_id',
+            'supplier_id',
+            'quantity',
+            'created_at',
+            'updated_at',
+        ], true)) {
+            $query->where($field, $value);
+        } else {
+            $query->where($field, 'like', '%' . $value . '%');
+        }
     }
+
+    $perPage = (int) $request->query('itemsPerPage', 10);
+
+    $perPage = in_array($perPage, [10, 25, 50, 100], true)
+        ? $perPage
+        : 10;
+
+    return $query
+        ->orderBy('id')
+        ->paginate($perPage)
+        ->withQueryString();
+}
+
 
     public function store(Request $request)
     {

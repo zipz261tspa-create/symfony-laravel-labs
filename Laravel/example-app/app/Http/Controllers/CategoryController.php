@@ -7,10 +7,49 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    public function index()
-    {
-        return Category::with('products')->get();
+    
+public function index(Request $request)
+{
+    $query = Category::with('products');
+
+    $filters = [
+        'id',
+        'name',
+        'description',
+        'created_at',
+        'updated_at',
+    ];
+
+    foreach ($filters as $field) {
+        $value = $request->query($field);
+
+        if ($value === null || $value === '') {
+            continue;
+        }
+
+        if (in_array($field, [
+            'id',
+            'created_at',
+            'updated_at',
+        ], true)) {
+            $query->where($field, $value);
+        } else {
+            $query->where($field, 'like', '%' . $value . '%');
+        }
     }
+
+    $perPage = (int) $request->query('itemsPerPage', 10);
+
+    $perPage = in_array($perPage, [10, 25, 50, 100], true)
+        ? $perPage
+        : 10;
+
+    return $query
+        ->orderBy('id')
+        ->paginate($perPage)
+        ->withQueryString();
+}
+
 
     public function store(Request $request)
     {
