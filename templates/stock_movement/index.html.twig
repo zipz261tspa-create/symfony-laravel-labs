@@ -1,0 +1,104 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Stock movement list{% endblock %}
+
+{% block body %}
+    <h1>Stock movement list</h1>
+
+    <form method="get" action="{{ path('app_stock_movement_index') }}">
+        <label for="id">ID:</label>
+        <input type="number" id="id" name="id"
+               value="{{ filters.id ?? '' }}" min="1">
+
+        <label for="type">Type:</label>
+        <input type="text" id="type" name="type"
+               value="{{ filters.type ?? '' }}">
+
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" name="quantity"
+               value="{{ filters.quantity ?? '' }}" min="0">
+
+        <label for="note">Note:</label>
+        <input type="text" id="note" name="note"
+               value="{{ filters.note ?? '' }}">
+
+        <label for="product">Product ID:</label>
+        <input type="number" id="product" name="product"
+               value="{{ filters.product ?? '' }}" min="1">
+
+        <label for="warehouse">Warehouse ID:</label>
+        <input type="number" id="warehouse" name="warehouse"
+               value="{{ filters.warehouse ?? '' }}" min="1">
+
+        <label for="supplier">Supplier ID:</label>
+        <input type="number" id="supplier" name="supplier"
+               value="{{ filters.supplier ?? '' }}" min="1">
+
+        <label for="itemsPerPage">Items per page:</label>
+        <select id="itemsPerPage" name="itemsPerPage">
+            {% for amount in [5, 10, 25, 50, 100] %}
+                <option value="{{ amount }}"
+                    {% if itemsPerPage == amount %}selected{% endif %}>
+                    {{ amount }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Apply filters</button>
+        <a href="{{ path('app_stock_movement_index') }}">Reset</a>
+    </form>
+
+    <p>Stock movements found: {{ totalItems }}</p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Quantity</th>
+                <th>Note</th>
+                <th>Product ID</th>
+                <th>Warehouse ID</th>
+                <th>Supplier ID</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for stock_movement in stock_movements %}
+            <tr>
+                <td>{{ stock_movement.id }}</td>
+                <td>{{ stock_movement.type }}</td>
+                <td>{{ stock_movement.quantity }}</td>
+                <td>{{ stock_movement.note }}</td>
+                <td>{{ stock_movement.product ? stock_movement.product.id : '' }}</td>
+                <td>{{ stock_movement.warehouse ? stock_movement.warehouse.id : '' }}</td>
+                <td>{{ stock_movement.supplier ? stock_movement.supplier.id : '' }}</td>
+                <td>
+                    <a href="{{ path('app_stock_movement_show', {'id': stock_movement.id}) }}">Show</a>
+                    <a href="{{ path('app_stock_movement_edit', {'id': stock_movement.id}) }}">Edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8">No stock movements found.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% if totalPages > 1 %}
+        <nav aria-label="Pagination">
+            {% if page > 1 %}
+                <a href="{{ path('app_stock_movement_index', app.request.query.all|merge({'page': page - 1})) }}">Previous</a>
+            {% endif %}
+
+            <span>Page {{ page }} of {{ totalPages }}</span>
+
+            {% if page < totalPages %}
+                <a href="{{ path('app_stock_movement_index', app.request.query.all|merge({'page': page + 1})) }}">Next</a>
+            {% endif %}
+        </nav>
+    {% endif %}
+
+    <a href="{{ path('app_stock_movement_new') }}">Create new stock movement</a>
+{% endblock %}

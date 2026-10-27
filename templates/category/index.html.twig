@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Category list{% endblock %}
+
+{% block body %}
+    <h1>Category list</h1>
+
+    <form method="get" action="{{ path('app_category_index') }}">
+        <label for="id">ID:</label>
+        <input type="number" id="id" name="id" value="{{ filters.id ?? '' }}" min="1">
+
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="{{ filters.name ?? '' }}">
+
+        <label for="description">Description:</label>
+        <input type="text" id="description" name="description" value="{{ filters.description ?? '' }}">
+
+        <label for="itemsPerPage">Items per page:</label>
+        <select id="itemsPerPage" name="itemsPerPage">
+            {% for amount in [5, 10, 25, 50, 100] %}
+                <option value="{{ amount }}" {% if itemsPerPage == amount %}selected{% endif %}>
+                    {{ amount }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Apply filters</button>
+        <a href="{{ path('app_category_index') }}">Reset</a>
+    </form>
+
+    <p>Categories found: {{ totalItems }}</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for category in categories %}
+            <tr>
+                <td>{{ category.id }}</td>
+                <td>{{ category.name }}</td>
+                <td>{{ category.description }}</td>
+                <td>
+                    <a href="{{ path('app_category_show', {'id': category.id}) }}">Show</a>
+                    <a href="{{ path('app_category_edit', {'id': category.id}) }}">Edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">No categories found.</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% if totalPages > 1 %}
+        <nav aria-label="Pagination">
+            {% if page > 1 %}
+                <a href="{{ path('app_category_index', app.request.query.all|merge({'page': page - 1})) }}">Previous</a>
+            {% endif %}
+
+            <span>Page {{ page }} of {{ totalPages }}</span>
+
+            {% if page < totalPages %}
+                <a href="{{ path('app_category_index', app.request.query.all|merge({'page': page + 1})) }}">Next</a>
+            {% endif %}
+        </nav>
+    {% endif %}
+
+    <a href="{{ path('app_category_new') }}">Create new category</a>
+{% endblock %}
